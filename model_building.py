@@ -46,14 +46,14 @@ lr.fit(X_train, y_train)
 # see what happens when you DON'T SHUFFLE: https://www.kaggle.com/getting-started/59719
 kf = KFold(shuffle=True, n_splits=3)
 scores = cross_val_score(lr, X_train, y_train, cv=kf, scoring='neg_mean_absolute_error')
-print(np.mean(scores))
+print('LR mean cross_val_score: {}'.format(np.mean(scores)))
 
 # L1 regularization using Lasso Regression
 from sklearn.linear_model import Lasso
 lr_l = Lasso()
 kf_l = KFold(shuffle=True, n_splits=3)
 scores_l = cross_val_score(lr_l, X_train, y_train, cv=kf_l, scoring='neg_mean_absolute_error')
-print(np.mean(scores_l))
+print('Lasso LR mean cross_val_score: {}'.format(np.mean(scores_l)))
 
 alphas = [i/10 for i in range(1,100)]
 errors = []
@@ -74,7 +74,7 @@ lr_l.fit(X_train, y_train)
 # random forest
 from sklearn.ensemble import RandomForestRegressor
 rf = RandomForestRegressor()
-print(np.mean(cross_val_score(rf, X_train, y_train, scoring='neg_mean_absolute_error', cv=3)))
+print('RFR mean cross_val_score: {}'.format(np.mean(cross_val_score(rf, X_train, y_train, scoring='neg_mean_absolute_error', cv=3))))
 
 # tune models GridsearchCV
 from sklearn.model_selection import GridSearchCV
@@ -82,12 +82,12 @@ parameters = {'n_estimators':range(10, 300, 10), 'criterion':('mse', 'mae'), 'ma
 gs = GridSearchCV(rf, parameters, scoring='neg_mean_absolute_error', cv=3)
 gs.fit(X_train, y_train)
 
-print(gs.best_score_, gs.best_estimator_)
+print('GridSearchCV best_score: {}, best_estimator: {}'.format(gs.best_score_, gs.best_estimator_))
 
 # test ensembles
 tpred_lr = lr.predict(X_test)
 tpred_lrl = lr_l.predict(X_test)
-tpred_rf = rf.predict(X_test)
+tpred_rf = gs.best_estimator_.predict(X_test)
 
 from sklearn.metrics import mean_absolute_error
 print('MAE for test set and OLS model: {}'.format(mean_absolute_error(y_test, tpred_lr)))
