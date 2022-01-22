@@ -1,6 +1,8 @@
 import pandas as pd
 from matplotlib import pyplot as plt
 import numpy as np
+import pickle
+
 
 df = pd.read_csv('eda_data.csv')
 # print(df.columns)
@@ -29,7 +31,7 @@ X = df_dummy.drop('avg_salary', axis = 1)
 y = df_dummy['avg_salary'].values
 # print(y)
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-
+# print(list(X_test.iloc[1,:]))
 
 # mutiple linear regression
 import statsmodels.api as sm
@@ -96,3 +98,6 @@ print('MAE for test set and RFR model: {}'.format(mean_absolute_error(y_test, tp
 
 # combine 2 models 
 print('MAE for test set and Lasso, RFR combined: {}'.format(mean_absolute_error(y_test, (tpred_lrl+tpred_rf)/2)))
+
+
+pickle.dump(gs.best_estimator_, open('final_ds_salary_model.pickle', 'wb'))
